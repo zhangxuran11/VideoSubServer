@@ -1,0 +1,20 @@
+QLineEdit,QTextEdit,QLabel{
+    font: 900 17pt "文泉驿等宽正黑";
+}
+QLabel{
+    font: 900 17pt "文泉驿等宽正黑";
+}
+
+QTextEdit{
+    padding-top:10px;
+}
+QPushButton{
+    font: 900 17pt "Ubuntu";
+}
+
+#carIDLabel{
+    font: 100 28pt "文泉驿等宽正黑";
+}
+#dateTimeLabel{
+    font: 20 12pt "Ubuntu";
+}
