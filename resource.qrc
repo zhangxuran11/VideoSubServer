@@ -24,5 +24,6 @@
         <file>images/xiaobian_in.png</file>
         <file>images/xiaobian_out.png</file>
         <file>images/horn.png</file>
+        <file>images/bottom.png</file>
     </qresource>
 </RCC>

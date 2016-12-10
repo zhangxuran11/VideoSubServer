@@ -5,7 +5,7 @@
 #include<QTableWidget>
 #include<QFile>
 #include"mytranslator.h"
-StackPanel::StackPanel(MyTranslator* _translator ,QWidget *parent) :
+StackPanel::StackPanel(MyTranslator* _translator,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::StackPanel)
 {
@@ -187,7 +187,6 @@ void StackPanel::loadTimeTable(int train_id)
         tableWidget->setItem(i,3,item);
 
     }
-
 }
 StackPanel::~StackPanel()
 {

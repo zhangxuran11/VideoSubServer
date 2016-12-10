@@ -14,6 +14,8 @@
 #include"workthread.h"
 #include"zutility.h"
 #include"ztools.h"
+#include <QGraphicsView>
+#include <QGraphicsTextItem>
 
 using namespace std;
 void CQplayerGUI::stop()
@@ -77,6 +79,7 @@ CQplayerGUI::CQplayerGUI(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CQplayerGUI)
 {
+
     translator = new MyTranslator(":/language_thai.ini");
     switchLanguage = new QTimer;
     switchLanguage->setSingleShot(false);
@@ -84,16 +87,9 @@ CQplayerGUI::CQplayerGUI(QWidget *parent) :
     switchLanguage->setInterval(10000);
     switchLanguage->start();
     ui->setupUi(this);
+    QGraphicsScene* scene = new QGraphicsScene(this);
+    ui->graphicsView->setScene(scene);
     isARC = false;//初始化不是餐车
-    if(workThread->isCJRCar())
-    {
-        ui->wcStateLabel1->setGeometry(ui->wcStateLabel2->x(),630,ui->wcStateLabel1->width(),ui->wcStateLabel1->width());
-        ui->wcStateLabel1->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_out.png);"));
-        ui->wcStateLabel2->setGeometry(ui->wcStateLabel3->x(),630,ui->wcStateLabel2->width(),ui->wcStateLabel2->width());
-        ui->wcStateLabel2->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_out.png);"));
-        ui->wcStateLabel3->setGeometry(1400,630,ui->wcStateLabel2->width(),ui->wcStateLabel2->width());
-
-    }
     QString ip = ZTools::getIP();
     if(ip != "")
     {
@@ -215,32 +211,44 @@ void CQplayerGUI::refresh()
 
     ui->_speedLabel->setText(translator->tr("Speed"));
     ui->_speedUnitLabel->setText(translator->tr("km/h"));
-    ui->_startStaionLabel->setText(translator->tr("Origin station"));
-    ui->_endStationLabel->setText(translator->tr("Destination station"));
-    ui->_preStationLabel->setText(translator->tr("Previous station"));
-    ui->_nextStationLabel->setText(translator->tr("Next station"));
+
     ui->_carIDLabel->setText(translator->tr("CAR NO"));
     ui->_trainIDLabel->setText(translator->tr("Train No"));
-    ui->_curStationLabel->setText(translator->tr("This Station"));
     ui->_arriveTimeLabel->setText(translator->tr("Destination station time"));
     ui->_nextStationTimeLabel->setText(translator->tr("Next station time"));
     ui->_TempLabel->setText(translator->tr("TEMPERATURE"));
     ui->_outTempLabel->setText(translator->tr("Outside T"));
     ui->_innerTempLabel->setText(translator->tr("Room T"));
-    if(translator->curLan == "En") {
-        ui->startStaionLabel->setText(GlobalInfo::getInstance()->g_info.getPara("StartStation"));
-        ui->endStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("EndStation"));
-        ui->preStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("PreStation"));
-        ui->nextStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("NextStation"));
-        ui->curStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("CurrentStationEn"));
-    }
-    else{
-        ui->startStaionLabel->setText(GlobalInfo::getInstance()->g_info.getPara("StartStation_th"));
-        ui->endStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("EndStation_th"));
-        ui->preStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("PreStation_th"));
-        ui->nextStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("NextStation_th"));
-        ui->curStationLabel->setText(GlobalInfo::getInstance()->g_info.getPara("CurrentStationTh"));
-    }
     stackPanel->updateLan();
 
+    int train_id = stackPanel->trainId;
+    int index = stackPanel->mapPanel->cur_index - 8;
+    if(index < 1)
+        index = 1;
+    QString sql = QString("select indexNu,station_name_en,station_name_th,arrive_time,start_time from tb_station_info where train_id=%1 order by indexNu limit %2,17").arg(train_id).arg(index-1);
+    ResultSet rowSet = stackPanel->mapPanel->dbService->query(sql);
+    if(rowSet.count() == 0)
+        return;
+    QGraphicsScene* scene = ui->graphicsView->scene();
+    QGraphicsTextItem* item = NULL;
+    scene->clear();
+    QFont font("Ubuntu",20,QFont::Bold);
+    if(translator->curLan == "En")
+    {
+        for(int i = 0;i < rowSet.count();i++)
+        {
+            item = scene->addText(rowSet[i].getPara("station_name_en"),font);
+            item->setRotation(-45);
+            item->setPos(item->x()+i*1.5*QFontMetrics(font).height(),item->y());
+        }
+    }
+    else
+    {
+        for(int i = 0;i < rowSet.count();i++)
+        {
+            item = scene->addText(rowSet[i].getPara("station_name_th"),font);
+            item->setRotation(-45);
+            item->setPos(item->x()+i*1.5*QFontMetrics(font).height(),item->y()+15);
+        }
+    }
 }

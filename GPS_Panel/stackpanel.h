@@ -16,13 +16,14 @@ class StackPanel;
 class StackPanel : public QWidget
 {
     Q_OBJECT
-    MAP_Panel* mapPanel;
     CheckVersionThread* checkVersionThread;
-    int trainId;
+
     bool _isHidden;
 public:
     bool s_off;
     int secs_off;
+    int trainId;
+    MAP_Panel* mapPanel;
     void setSecsOff(int _secs_off)
         {secs_off = _secs_off;}
     MyTranslator* translator;

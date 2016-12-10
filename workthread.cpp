@@ -98,21 +98,7 @@ void WorkThread::recvBroadCast()
         GlobalInfo::getInstance()->g_info.addPara("PreStation_th",ztp.getPara("PreStation_th"));
         GlobalInfo::getInstance()->g_info.addPara("NextStation_th",ztp.getPara("NextStation_th"));
         GlobalInfo::getInstance()->g_info.addPara("CurrentStationTh",ztp.getPara("CurrentStationTh"));
-        if(gui->translator->curLan== "En") {
-            gui->ui->startStaionLabel->setText(ztp.getPara("StartStation"));
-            gui->ui->endStationLabel->setText(ztp.getPara("EndStation"));
-            gui->ui->preStationLabel->setText(ztp.getPara("PreStation"));
-            gui->ui->nextStationLabel->setText(ztp.getPara("NextStation"));
-            gui->ui->curStationLabel->setText(ztp.getPara("CurrentStationEn"));
 
-        }
-        else{
-            gui->ui->startStaionLabel->setText(ztp.getPara("StartStation_th"));
-            gui->ui->endStationLabel->setText(ztp.getPara("EndStation_th"));
-            gui->ui->preStationLabel->setText(ztp.getPara("PreStation_th"));
-            gui->ui->nextStationLabel->setText(ztp.getPara("NextStation_th"));
-            gui->ui->curStationLabel->setText(ztp.getPara("CurrentStationTh"));
-        }
 
         int train_id = ztp.getPara("TrainNum").toInt();
         if(GlobalInfo::getInstance()->train_id != train_id)
@@ -155,35 +141,7 @@ void WorkThread::recvBroadCast()
         QString cur_xiaobian = ztp.getPara("CS1");
         QString cur_dabian = ztp.getPara("CS2");
         QString cur_dabian2 = ztp.getPara("CS3");
-        if(isCJRCar())
-        {
-            //cur_xiaobian->CS1->dabian
-            //cur_dabian->CS2->dabian2
-            if(pre_xiaobian != cur_xiaobian)
-            {
-                if(cur_xiaobian == "Y")
-                {
-                    gui->ui->wcStateLabel1->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_out.png);"));
-                }
-                else
-                {
-                    gui->ui->wcStateLabel1->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_in.png);"));
-                }
-            }
-            if(pre_dabian != cur_dabian)
-            {
-                if(cur_dabian == "Y")
-                {
-                    gui->ui->wcStateLabel2->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_out.png);"));
-                }
-                else
-                {
-                    gui->ui->wcStateLabel2->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_in.png);"));
-                }
-            }
-
-        }
-        else if(gui->isARC)
+        if(gui->isARC)
         {
             gui->ui->wcStateLabel1->setStyleSheet(QString::fromUtf8(""));
             gui->ui->wcStateLabel2->setStyleSheet(QString::fromUtf8(""));
@@ -224,10 +182,10 @@ void WorkThread::recvBroadCast()
                     gui->ui->wcStateLabel3->setStyleSheet(QString::fromUtf8("border-image: url(:/images/dabian_in.png);"));
                 }
             }
+            pre_dabian2 = cur_dabian2;
+            pre_xiaobian = cur_xiaobian;
+            pre_dabian = cur_dabian;
        }
-        pre_dabian2 = cur_dabian2;
-        pre_xiaobian = cur_xiaobian;
-        pre_dabian = cur_dabian;
 
     }
     else if(ztp.getPara("T") == "IPaddress1")
@@ -281,12 +239,10 @@ void WorkThread::tempTimeOutProc()
         gui->ui->outTempLabel->setText("00");
     }
 }
-
 void WorkThread::run()
 {
     //ZTools::singleShot(1000,updateTime);
-    ZTPManager* cjrCarZtpm = new ZTPManager(8323,QHostAddress("224.102.228.40"));
-    connect(cjrCarZtpm,SIGNAL(readyRead()),this,SLOT(OnRecvCJRCar()));
+
     recvCarrierHeartTimer = new QTimer;
     recvCarrierHeartTimer->setInterval(10000);
     recvCarrierHeartTimer->setSingleShot(false);
@@ -331,32 +287,4 @@ void WorkThread::OnRecvCarrierHeart()
 void WorkThread::recvCarrierHeartTimeout()
 {
     GlobalInfo::getInstance()->player->versionCtrl->setOnline(false);
-}
-void WorkThread::OnRecvCJRCar()
-{
-    ZTPprotocol ztp;
-    ((ZTPManager*)sender())->getOneZtp(ztp);
-    if(ztp.getPara("T") == "CJR_CAR_NO")
-    {
-        if(isCJRCar() && ZTools::getCarID() != ztp.getPara("CAR").toInt())
-        {
-            setCJRCar(false);
-        }
-        else if(!isCJRCar() && ZTools::getCarID() == ztp.getPara("CAR").toInt())
-        {
-            setCJRCar(true);
-        }
-    }
-}
-bool WorkThread::isCJRCar()
-{
-    return QFile::exists("/appbin/isCJRCar");
-}
-void WorkThread::setCJRCar(bool set)
-{
-    if(set == false)
-        QFile::remove("/appbin/isCJRCar");
-    else
-        system("touch /appbin/isCJRCar");
-    qApp->exit();
 }
