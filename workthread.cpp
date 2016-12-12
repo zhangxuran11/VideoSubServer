@@ -285,8 +285,6 @@ void WorkThread::tempTimeOutProc()
 void WorkThread::run()
 {
     //ZTools::singleShot(1000,updateTime);
-    ZTPManager* cjrCarZtpm = new ZTPManager(8323,QHostAddress("224.102.228.40"));
-    connect(cjrCarZtpm,SIGNAL(readyRead()),this,SLOT(OnRecvCJRCar()));
     recvCarrierHeartTimer = new QTimer;
     recvCarrierHeartTimer->setInterval(10000);
     recvCarrierHeartTimer->setSingleShot(false);
@@ -332,31 +330,8 @@ void WorkThread::recvCarrierHeartTimeout()
 {
     GlobalInfo::getInstance()->player->versionCtrl->setOnline(false);
 }
-void WorkThread::OnRecvCJRCar()
-{
-    ZTPprotocol ztp;
-    ((ZTPManager*)sender())->getOneZtp(ztp);
-    if(ztp.getPara("T") == "CJR_CAR_NO")
-    {
-        if(isCJRCar() && ZTools::getCarID() != ztp.getPara("CAR").toInt())
-        {
-            setCJRCar(false);
-        }
-        else if(!isCJRCar() && ZTools::getCarID() == ztp.getPara("CAR").toInt())
-        {
-            setCJRCar(true);
-        }
-    }
-}
+
 bool WorkThread::isCJRCar()
 {
-    return QFile::exists("/appbin/isCJRCar");
-}
-void WorkThread::setCJRCar(bool set)
-{
-    if(set == false)
-        QFile::remove("/appbin/isCJRCar");
-    else
-        system("touch /appbin/isCJRCar");
-    qApp->exit();
+    return (ZTools::getCarGlobalID() >= 89 && ZTools::getCarGlobalID()<=97 ? true:false);
 }

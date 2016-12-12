@@ -60,7 +60,7 @@ QString ZTools::getIP()
     }
     return "";
 }
-int ZTools::getCarID_bk()
+int ZTools::getCarGlobalID()
 {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
     foreach(QHostAddress address,list)

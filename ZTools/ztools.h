@@ -22,7 +22,7 @@ public:
     static QByteArray readLineFromFile(const QString& fileName,int lineNo);
     static void msleep(int msecs);
     static int getCarID();
-    static int getCarID_bk();
+    static int getCarGlobalID();
     static QString getIP();
 
 };

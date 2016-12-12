@@ -20,9 +20,6 @@ private slots:
     void tempTimeOutProc();
     void OnRecvCarrierHeart();
     void recvCarrierHeartTimeout();
-    void OnRecvCJRCar();
-
-    void setCJRCar(bool set);
 };
 
 #endif // WORKTHREAD_H
