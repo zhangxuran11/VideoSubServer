@@ -8,6 +8,7 @@ class WorkThread : public QThread
     Q_OBJECT
     ZTPManager *broadCastManager;
     QTimer* recvCarrierHeartTimer;
+    ZTPManager* recv_car_id_map_ztpm;
 public:
     ZTPManager* ztpmCarrierHeart;
     explicit WorkThread(QObject *parent = 0);
@@ -20,6 +21,7 @@ private slots:
     void tempTimeOutProc();
     void OnRecvCarrierHeart();
     void recvCarrierHeartTimeout();
+    void slot_recv_car_id_map();
 };
 
 #endif // WORKTHREAD_H

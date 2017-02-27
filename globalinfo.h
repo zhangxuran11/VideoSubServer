@@ -12,7 +12,6 @@ class GlobalInfo : public QObject
     explicit GlobalInfo(QObject *parent = 0);
 public:
     static GlobalInfo* getInstance();
-    int carId;
     int train_id;
     ZTPprotocol g_info;
     QString VServerIP;

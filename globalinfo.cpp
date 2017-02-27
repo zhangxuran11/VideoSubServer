@@ -9,7 +9,6 @@ GlobalInfo::GlobalInfo(QObject *parent) :
     VServerIP = "";
     sysCtlIp = "";
     recipeServerIp = "";
-    carId = ZTools::getCarID();
 
     g_info.addPara("StartStation","--");
     g_info.addPara("EndStation","--");

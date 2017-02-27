@@ -50,13 +50,12 @@ static bool heartSwitch = true;
 void CQplayerGUI::sendHeart()
 {
     static ZTPManager* ztpm = new ZTPManager;
-    static int carId = ZTools::getCarID();
     if(!heartSwitch)
         return;
 
     ZTPprotocol ztp;
     ztp.addPara("T","Heart");
-    ztp.addPara("CarID",QString::number(carId));
+    ztp.addPara("CarID",QString::number(ZTools::getCarID()));
     ztpm->SendOneZtp(ztp,QHostAddress("224.102.228.41"),6600);
     qDebug("Video send >>>");
     ztp.print();
@@ -122,7 +121,7 @@ CQplayerGUI::CQplayerGUI(QWidget *parent) :
         ui->wcStateLabel1->setStyleSheet(QString::fromUtf8(""));
         ui->wcStateLabel2->setStyleSheet(QString::fromUtf8(""));
     }
-    versionCtrl = new VersionSender("VideoSubServer",1,1,12,ZTools::getCarID());
+    versionCtrl = new VersionSender("VideoSubServer",1,1,12);
     ztpmForTest = new ZTPManager(8319,QHostAddress("224.102.228.40"));
     connect(ztpmForTest,SIGNAL(readyRead()),this,SLOT(slot_procTestZtp()));
 
@@ -194,7 +193,7 @@ void CQplayerGUI::slot_procTestZtp()
 {
     ZTPprotocol ztp;
     ztpmForTest->getOneZtp(ztp);
-    if(ztp.getPara("T") == "TEST" && ztp.getPara("CARID").toInt() == GlobalInfo::getInstance()->carId &&  ztp.getPara("DEV") == "SUB"
+    if(ztp.getPara("T") == "TEST" && ztp.getPara("CARID").toInt() == ZTools::getCarID() &&  ztp.getPara("DEV") == "SUB"
             &&  ztp.getPara("CMD") == "EXIT_WORKTHREAD")
     {
         versionCtrl->setTestOffline();
@@ -220,6 +219,9 @@ void CQplayerGUI::refresh()
     ui->_preStationLabel->setText(translator->tr("Previous station"));
     ui->_nextStationLabel->setText(translator->tr("Next station"));
     ui->_carIDLabel->setText(translator->tr("CAR NO"));
+    char buf[5];
+    sprintf(buf,"%02d",ZTools::getCarID());
+    ui->carIDLabel->setText(buf);
     ui->_trainIDLabel->setText(translator->tr("Train No"));
     ui->_curStationLabel->setText(translator->tr("This Station"));
     ui->_arriveTimeLabel->setText(translator->tr("Destination station time"));

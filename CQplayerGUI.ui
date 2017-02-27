@@ -821,7 +821,7 @@ font:  bold 30pt &quot;Ubuntu&quot;;
 </string>
     </property>
     <property name="text">
-     <string>00</string>
+     <string>33</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -870,7 +870,7 @@ font:  bold 30pt &quot;Ubuntu&quot;;
 </string>
     </property>
     <property name="text">
-     <string>00</string>
+     <string>25</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

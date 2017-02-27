@@ -258,7 +258,7 @@ void WorkThread::recvBroadCast()
         bool broadSignal = false;
         if(ztp.getPara("HasBroadcast") == "Y" ||
                 (ztp.getPara("HasBroadcast_lc") == "Y" &&
-                 ztp.getPara("CarId").toInt() == GlobalInfo::getInstance()->carId ))
+                 ztp.getPara("CarId").toInt() == ZTools::getCarID() ))
         {
            broadSignal = true;
         }
@@ -273,18 +273,31 @@ void WorkThread::tempTimeOutProc()
     if(timer == carTempTimer)
     {
         CQplayerGUI* gui = GlobalInfo::getInstance()->player;
-        gui->ui->innerTempLabel->setText("00");
+        gui->ui->innerTempLabel->setText("25");
     }
     else if(timer == outTempTimer)
     {
         CQplayerGUI* gui = GlobalInfo::getInstance()->player;
-        gui->ui->outTempLabel->setText("00");
+        gui->ui->outTempLabel->setText("33");
     }
 }
-
+void WorkThread::slot_recv_car_id_map()
+{
+    ZTPprotocol ztp;
+    recv_car_id_map_ztpm->getOneZtp(ztp);
+    if(ztp.getPara("T") == "CAR_ID_MAP" && ztp.getPara("GLOBAL_ID").toInt() == ZTools::getCarGlobalID() )
+    {
+        if(ztp.getPara("CAR_ID").toInt() !=ZTools::getCarID())
+        {
+            ZTools::setCarID(ztp.getPara("CAR_ID").toInt());
+        }
+    }
+}
 void WorkThread::run()
 {
     //ZTools::singleShot(1000,updateTime);
+    recv_car_id_map_ztpm = new ZTPManager(8323,QHostAddress("224.102.228.40"));
+    connect(recv_car_id_map_ztpm,SIGNAL(readyRead()),this,SLOT(slot_recv_car_id_map()));
     recvCarrierHeartTimer = new QTimer;
     recvCarrierHeartTimer->setInterval(10000);
     recvCarrierHeartTimer->setSingleShot(false);
